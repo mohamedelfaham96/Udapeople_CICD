@@ -273,6 +273,7 @@ jobs:
                   command: |
                        cd frontend
                        npm install
+                       sudo npm i || cat /root/.npm/_logs/2022-*debug.log
                        npm run build
                        tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
                        aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
