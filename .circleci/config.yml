@@ -1,7 +1,48 @@
 version: 2.1
 orbs:
   slack: circleci/slack@4.1
+executors:
+  node:
+    docker:
+      - image: circleci/node:13.8.0
+  python:
+    docker:
+      - image: python:3.9.0-alpine
+  aws:
+    docker:
+      - image: amazon/aws-cli
 commands:
+    install_awscli:
+      description: Install AWS CLI v2
+      steps:
+        - run:
+            name: Install AWS CLI v2
+            command: |
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              sudo ./aws/install
+    install_ansible:
+      description: Install Ansible
+      steps:
+        - run:
+            name: Install Ansible
+            command: |
+              sudo apt update
+              sudo apt install software-properties-common -y
+              sudo add-apt-repository --yes --update ppa:ansible/ansible
+              sudo apt install ansible -y
+    install_nodejs:
+      description: Install Node.js 13
+      steps:
+        - run:
+            name: Install Node.js 13
+            command: |
+              # Install Node.js LTS version as our base Node.js version
+              curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+              sudo apt install -y nodejs
+              # Use n version manager to use Node.js v13.8.0
+              sudo npm install --global n
+              sudo n 13.8.0
     destroy-environment:
         description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
         parameters:
@@ -248,7 +289,8 @@ jobs:
             - image: python:3.7-alpine
         steps:
             - checkout
-
+            - install_awscli
+            - install_nodejs
             - run:
                   name: Install dependencies
                   command: |
@@ -272,11 +314,8 @@ jobs:
                   name: Build and Deploy frontend objects
                   command: |
                        cd frontend
-                       #curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-                       #sudo apt-get install nodejs
-                       npm install
                        npm run build
-                       #tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+                       tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
                        aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             - destroy-environment:
                   workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
@@ -291,7 +330,7 @@ jobs:
             - add_ssh_keys:
                 fingerprints: ["f4:19:68:91:56:8f:b5:36:30:90:12:d9:31:37:fd:7d"]
             - attach_workspace:
-                at: ~/          
+                at: .          
             - run:
                   name: Install dependencies
                   working_directory: /tmp
