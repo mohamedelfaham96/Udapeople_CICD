@@ -357,12 +357,12 @@ jobs:
       - checkout
       - install_awscli
       - install_nodejs
-      - run:
-          name: Install dependencies
-          command: |
-            apt install -y tar gzip curl
-            curl -sL https://rpm.nodesource.com/setup_10.x | bash -
-            apt install -y nodejs
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       apt install -y tar gzip curl
+      #       curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+      #       apt install -y nodejs
       - run:
           name: Store old WorkflowID in memstash for cleanup phase
           working_directory: ./.circleci/files
