@@ -351,9 +351,12 @@ jobs:
 
     
   cloudfront-update:
-    executor: aws
+    docker:
+      - image: cimg/base:stable
     steps:
       - checkout
+      - install_awscli
+      - install_nodejs
       - run:
           name: Install dependencies
           command: |
