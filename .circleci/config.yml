@@ -360,9 +360,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install -y tar gzip curl
+            apt install -y tar gzip curl
             curl -sL https://rpm.nodesource.com/setup_10.x | bash -
-            yum install -y nodejs
+            apt install -y nodejs
       - run:
           name: Store old WorkflowID in memstash for cleanup phase
           working_directory: ./.circleci/files
