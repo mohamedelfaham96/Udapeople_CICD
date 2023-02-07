@@ -277,7 +277,7 @@ jobs:
       - checkout
       - install_awscli
       - install_nodejs
-      #- install_ansible
+      - install_ansible
       - add_ssh_keys:
          fingerprints: ["f4:19:68:91:56:8f:b5:36:30:90:12:d9:31:37:fd:7d"]
       - attach_workspace:
@@ -289,10 +289,13 @@ jobs:
           command: |
             cd backend
             npm install
+            sudo npm i
       - run:
           name: Package backend and archive dist folder and package.json files used to generate node modules
           command: |
             cd backend
+            npm install
+            sudo npm i
             npm run build
             tar -czf artifact.tar.gz dist/* package*
             cd ..
