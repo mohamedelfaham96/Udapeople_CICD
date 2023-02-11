@@ -8,11 +8,11 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-3011c0a --recursive
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             
-            aws cloudformation delete-stack --stack-name=udapeople-frontend-3011c0a
+            aws cloudformation delete-stack --stack-name=udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
 
-            aws cloudformation delete-stack --stack-name=udapeople-backend-3011c0a
+            aws cloudformation delete-stack --stack-name=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
 
             
   revert-migrations:
@@ -23,7 +23,7 @@ commands:
           when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            Result=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/migration_3011c0a)
+            Result=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if(( $Result==1 )); 
             then
               cd ~/project/backend
@@ -168,21 +168,21 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --stack-name "udapeople-backend-3011c0a" \
-              --parameter-overrides ID="3011c0a"  \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople 
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --stack-name "udapeople-frontend-3011c0a" \
-              --parameter-overrides ID="3011c0a"  \
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-3011c0a" --output text >> .circleci/ansible/inventory.txt
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text >> .circleci/ansible/inventory.txt
       - persist_to_workspace: # to persist the public ip in inventory.txt file
           root: ~/
           paths:
@@ -231,7 +231,7 @@ jobs:
               if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
                 then
                     # If you are using kvdb.io, generate the bucket ID "9GE4jRtKznmVKRfvdBABBe" in your local terminal first
-                    curl https://kvdb.io/${KVDB_BUCKET}/migration_3011c0a
+                    curl https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}
               fi
       - destroy-environment
       - revert-migrations
@@ -255,7 +255,7 @@ jobs:
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances \
             --query "Reservations[*].Instances[*].[PublicIpAddress]" \
-            --filters "Name=tag:Name,Values=backend-3011c0a" \
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --output text)
             echo "API_URL=http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
@@ -265,7 +265,7 @@ jobs:
             cd frontend
             npm install
             npm run build
-            aws s3 cp dist s3://udapeople-3011c0a --recursive
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure      
       - destroy-environment
       - revert-migrations       
@@ -324,7 +324,7 @@ jobs:
           name: Backend smoke test.
           command: |
             BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-3011c0a" \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
             export API_URL=http://${BACKEND_PUBLIC_IP}:3030
@@ -338,7 +338,7 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-            URL="http://udapeople-3011c0a.s3-website-us-east-1.amazonaws.com/#/employees"
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"
             echo $URL
             if curl -s $URL | grep "Welcome"
             then
@@ -357,7 +357,7 @@ jobs:
       - checkout
       - install_awscli
       - install_nodejs
-      
+
       # - run:
       #     name: Install dependencies
       #     command: |
@@ -380,7 +380,7 @@ jobs:
             aws cloudformation deploy \
               --template-file cloudfront.yml \
               --stack-name InitialStack \
-              --parameter-overrides WorkflowID="3011c0a" \
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
 
       #- destroy-environment
