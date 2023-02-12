@@ -1,0 +1,13 @@
+Public Url to GitHub repository (not private) => [URL01]
+https://github.com/mohamedelfaham96/Udapeople_CICD
+
+Public URL for your S3 Bucket (aka, your green candidate front-end) [URL02]
+http://udapeople-b34cc41.s3-website-us-east-1.amazonaws.com/#/employees
+
+
+Public URL for your Prometheus. [URL03]
+http://100.25.38.118:9090/targets?search=
+
+
+Public URL for check API status. [URL04]
+http://100.25.38.118:3030/api/status
