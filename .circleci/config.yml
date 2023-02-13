@@ -95,10 +95,10 @@ jobs:
              # Your code here
              cd backend
              npm install
-             #npm run build
-             npm audit fix --audit-level=critical --force
-             #npm audit fix --audit-level=critical --force
-             npm audit --audit-level=critical
+             npm run build
+            #  npm audit fix --audit-level=critical --force
+            #  npm audit fix --audit-level=critical --force
+            #  npm audit --audit-level=critical
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
@@ -143,8 +143,8 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm audit fix --audit-level=critical --force
-
+            #npm audit fix --audit-level=critical --force
+            npm audit --audit-level=critical
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
