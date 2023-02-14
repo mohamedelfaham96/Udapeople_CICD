@@ -93,7 +93,7 @@ jobs:
           name: Back-end build
           command: |
              # Your code here
-             cd backend
+             cd ansible
              npm run build
             #  npm audit fix --audit-level=critical --force
             #  npm audit fix --audit-level=critical --force
