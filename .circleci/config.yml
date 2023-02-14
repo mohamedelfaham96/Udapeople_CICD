@@ -93,7 +93,8 @@ jobs:
           name: Back-end build
           command: |
              # Your code here
-             echo 'fail'
+             cd backend
+             npm run build
             #  npm audit fix --audit-level=critical --force
             #  npm audit fix --audit-level=critical --force
             #  npm audit --audit-level=critical
